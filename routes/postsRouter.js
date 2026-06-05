@@ -1,15 +1,15 @@
 const { Router } = require("express");
 
 const postsController = require("../controllers/postsController");
-const reqLogger = require("../middlewares/reqLogger");
+const { createPostSchema, updatePostSchema, validate } = require("../middlewares/validators");
 
 const router = Router();
 
 // /posts
-router.post("/", postsController.createPost);
+router.post("/", validate(createPostSchema), postsController.createPost);
 router.get("/", postsController.readPosts);
 router.get("/:id", postsController.getPostById);
-router.put("/:id", postsController.updatePost);
+router.put("/:id", validate(updatePostSchema), postsController.updatePost);
 router.delete("/:id", postsController.deletePost);
 
 
