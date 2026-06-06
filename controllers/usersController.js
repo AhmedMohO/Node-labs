@@ -2,7 +2,6 @@ const userService = require("../services/usersService");
 
 
 const createUser = async (req, res) => {
-    flfkldmls;
     const newUser = await userService.createUser(req.body);
 
     res.status(201).json({ message: "user created successfully", data: newUser });

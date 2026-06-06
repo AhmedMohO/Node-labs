@@ -5,14 +5,12 @@ const createPostSchema = [
     body("title").notEmpty().withMessage("Title is required"),
     body("author").notEmpty().withMessage("Author is required"),
     body("content").notEmpty().withMessage("Content is required"),
-    body("tags").optional().isArray().withMessage("Tags must be an array"),
 ];
 
 const updatePostSchema = [
     body("title").optional().notEmpty().withMessage("Title cannot be empty"),
     body("author").optional().notEmpty().withMessage("Author cannot be empty"),
     body("content").optional().notEmpty().withMessage("Content cannot be empty"),
-    body("tags").optional().isArray().withMessage("Tags must be an array"),
 ];
 
 const validate = (schemas) => {

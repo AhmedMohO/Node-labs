@@ -4,23 +4,20 @@
 		"title": "Getting Started with Mock Data",
 		"author": "Alex Morgan",
 		"date": "2026-06-01",
-		"content": "Mock data helps you build and test features before real content is available.",
-		"tags": ["mock", "testing", "development"]
+		"content": "Mock data helps you build and test features before real content is available."
 	},
 	{
 		"id": 2,
 		"title": "Designing a Simple Post Feed",
 		"author": "Priya Shah",
 		"date": "2026-06-02",
-		"content": "A clean post feed should be easy to scan, sort, and extend with more fields later.",
-		"tags": ["ui", "feed", "posts"]
+		"content": "A clean post feed should be easy to scan, sort, and extend with more fields later."
 	},
 	{
 		"id": 3,
 		"title": "Why Sample Content Matters",
 		"author": "Jordan Lee",
 		"date": "2026-06-03",
-		"content": "Sample content makes prototypes feel complete and supports faster frontend iteration.",
-		"tags": ["sample", "prototype", "frontend"]
+		"content": "Sample content makes prototypes feel complete and supports faster frontend iteration."
 	}
 ]

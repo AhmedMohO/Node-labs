@@ -4,23 +4,22 @@ const cors = require("cors");
 const usersRouter = require("./routes/usersRouter");
 const postsRouter = require("./routes/postsRouter");
 const ApiError = require("./utils/ApiError");
+const reqLogger = require("./middlewares/reqLogger");
 
 const app = express();
 
 // app level middlewares
 app.use(express.json());
 app.use(cors());
-app.use(morgan("dev"));
+// app.use(morgan("dev"));
+app.use(reqLogger);
 
 
 // define routes
 app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
 
-// global error middleware
 app.use((err, req, res, next) => {
-    console.error("❌❌ ", err);
-
     if (err instanceof ApiError) {
         return res.status(err.statusCode).json({
             status: err.status,
