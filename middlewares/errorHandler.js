@@ -3,6 +3,10 @@ const APIError = require("../utils/APIError");
 module.exports = (err, req, res, next) => {
     console.error("❌❌ ", err);
 
+    if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
+        return res.status(401).json({ message: "Invalid or expired token" });
+    }
+
     // mongoose errors
     if (err.name === "ValidationError") {
         return res.status(400).json({ message: err.message });

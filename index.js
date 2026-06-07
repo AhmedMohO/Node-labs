@@ -1,13 +1,15 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
+const dotenv = require("dotenv");
+const helmet = require("helmet");
+const { xss } = require("express-xss-sanitizer");
+const hpp = require("hpp");
 const usersRouter = require("./routes/usersRouter");
 const postsRouter = require("./routes/postsRouter");
-const ApiError = require("./utils/ApiError");
-const reqLogger = require("./middlewares/reqLogger");
 const errorHandler = require("./middlewares/errorHandler");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
+const rateLimiter = require("./middlewares/rateLimiter");
 
 dotenv.config();
 const app = express();
@@ -15,14 +17,18 @@ const app = express();
 // app level middlewares
 app.use(express.json());
 app.use(cors());
-// app.use(morgan("dev"));
-app.use(reqLogger);
+app.use(morgan("dev"));
+app.use(helmet());
+app.use(xss());
+app.use(hpp());
+app.use(rateLimiter);
 
 
 // define routes
 app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
 
+// global error middleware
 app.use(errorHandler);
 
 const PORT = process.env.PORT;

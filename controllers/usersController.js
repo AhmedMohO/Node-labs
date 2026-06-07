@@ -1,9 +1,48 @@
 const userService = require("../services/usersService");
 const APIError = require("../utils/APIError");
 
-const createUser = async (req, res) => {
-    const newUser = await userService.createUser(req.body);
+const signUp = async (req, res) => {
+    const passwordConfirm = req.body.passwordConfirm || req.body.confirmPassword;
+
+    if (!req.body.password || !passwordConfirm) {
+        throw new APIError("password and passwordConfirm are required", 400);
+    }
+
+    if (req.body.password !== passwordConfirm) {
+        throw new APIError("password and passwordConfirm must match", 400);
+    }
+
+    const user = await userService.getUserByEmail(req.body.email);
+    if (user) {
+        throw new APIError("user already exists", 400);
+    }
+
+    const newUserPayload = {
+        ...req.body,
+        confirmPassword: passwordConfirm,
+    };
+
+    // create new user with hashed password
+    const newUser = await userService.signUp(newUserPayload);
+
     res.status(201).json({ message: "user created successfully", data: newUser });
+}
+
+const signIn = async (req, res) => {
+    const user = await userService.getUserByEmail(req.body.email);
+    if (!user) {
+        throw new APIError("Invalid email and password combination", 401);
+    }
+    // compare passwords
+    const isPasswordsMatch = await userService.comparePasswords(req.body.password, user.password);
+    if (!isPasswordsMatch) {
+        throw new APIError("Invalid email and password combination", 401);
+    }
+
+    // generate token
+    const token = await userService.generateToken(user);
+
+    res.status(200).json({ message: "user signed in successfully", data: { token } });
 }
 
 const readUsers = async (req, res) => {
@@ -38,9 +77,10 @@ const deleteUser = async (req, res) => {
 }
 
 module.exports = {
-    createUser,
+    signUp,
     readUsers,
     getUserById,
     updateUser,
-    deleteUser
+    deleteUser,
+    signIn
 }

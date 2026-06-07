@@ -1,10 +1,13 @@
 const User = require("../models/users");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-const createUser = async (user) => {
-    console.log(user);
+const signUp = async (user) => {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
     const mappedUser = {
         ...user,
-        dateOfBirth: new Date(user.dateOfBirth)
+        dateOfBirth: new Date(user.dateOfBirth),
+        password: hashedPassword
     }
     const newUser = await User.create(mappedUser);
     return newUser;
@@ -18,7 +21,6 @@ const getUserById = async (id) => {
 
 const updateUser = async (id, user) => {
     const updatedUser = await User.findOneAndUpdate({ _id: id }, user, { new: true });
-    // const updatedUser = await User.findByIdAndUpdate(id, user, { new: true });
     return updatedUser;
 }
 
@@ -32,10 +34,37 @@ const listUsers = async () => {
     return users;
 }
 
+
+const getUserByEmail = async (email) => {
+    const user = await User.findOne({ email });
+    return user;
+}
+
+const comparePasswords = async (password, hashedPassword) => {
+    return await bcrypt.compare(password, hashedPassword);
+}
+
+const generateToken = async (user) => {
+    const payload = {
+        id: user._id,
+        email: user.email,
+        role: user.role
+    }
+    const secretKey = process.env.JWT_SECRET;
+    const options = {
+        expiresIn: '1h'
+    }
+
+    return jwt.sign(payload, secretKey, options);
+}
+
 module.exports = {
-    createUser,
+    signUp,
     getUserById,
     updateUser,
     deleteUser,
-    listUsers
+    listUsers,
+    getUserByEmail,
+    comparePasswords,
+    generateToken
 }

@@ -15,14 +15,14 @@ const listPosts = async () => {
     return posts;
 }
 
-const updatePost = async (id, post) => {
-    const updatedPost = await Post.findOneAndUpdate({ _id: id }, post, { new: true });
+const updatePost = async (id, post, userId) => {
+    const updatedPost = await Post.findOneAndUpdate({ _id: id, userId }, post, { new: true });
     // const updatedPost = await Post.findByIdAndUpdate(id, post, { new: true });
     return updatedPost;
 }
 
-const deletePost = async (id) => {
-    const deletedPost = await Post.findByIdAndDelete(id);
+const deletePost = async (id, userId) => {
+    const deletedPost = await Post.findOneAndDelete({ _id: id, userId });
     return deletedPost;
 }
 
