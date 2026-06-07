@@ -1,61 +1,41 @@
-const fs = require("fs").promises;
-
-const readUsers = async () => {
-    const data = await fs.readFile('./users.json', 'utf-8');
-    return JSON.parse(data);
-}
-
-const writeUsers = async (users) => {
-    await fs.writeFile('./users.json', JSON.stringify(users));
-}
+const User = require("../models/users");
 
 const createUser = async (user) => {
-    const users = await readUsers();
-    const newUser = {
-        id: users.length + 1,
-        ...user
+    console.log(user);
+    const mappedUser = {
+        ...user,
+        dateOfBirth: new Date(user.dateOfBirth)
     }
-    users.push(newUser);
-    await writeUsers(users);
+    const newUser = await User.create(mappedUser);
     return newUser;
 }
 
 const getUserById = async (id) => {
-    const users = await readUsers();
-    const user = users.find(user => user.id === Number(id));
+    const user = await User.findOne({ _id: id });
+    // const user = await User.findById(id);
     return user;
 }
 
 const updateUser = async (id, user) => {
-    const users = await readUsers();
-    const userIndex = users.findIndex(user => user.id === Number(id));
-    if (userIndex === -1) {
-        return null;
-    }
-    users[userIndex] = {
-        ...users[userIndex],
-        ...user
-    }
-    await writeUsers(users);
-    return users[userIndex];
+    const updatedUser = await User.findOneAndUpdate({ _id: id }, user, { new: true });
+    // const updatedUser = await User.findByIdAndUpdate(id, user, { new: true });
+    return updatedUser;
 }
 
 const deleteUser = async (id) => {
-    const users = await readUsers();
-    const userIndex = users.findIndex(user => user.id === Number(id));
-    if (userIndex === -1) {
-        return null;
-    }
-    users.splice(userIndex, 1);
-    await writeUsers(users);
-    return true;
+    const deletedUser = await User.findByIdAndDelete(id);
+    return deletedUser;
+}
+
+const listUsers = async () => {
+    const users = await User.find();
+    return users;
 }
 
 module.exports = {
-    readUsers,
-    writeUsers,
     createUser,
     getUserById,
     updateUser,
-    deleteUser
+    deleteUser,
+    listUsers
 }

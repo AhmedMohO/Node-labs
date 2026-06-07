@@ -1,61 +1,35 @@
-const fs = require("fs").promises;
-
-const readPosts = async () => {
-    const data = await fs.readFile('./posts.json', 'utf-8');
-    return JSON.parse(data);
-}
-
-const writePosts = async (posts) => {
-    await fs.writeFile('./posts.json', JSON.stringify(posts));
-}
+const Post = require("../models/posts");
 
 const createPost = async (post) => {
-    const posts = await readPosts();
-    const newPost = {
-        id: posts.length + 1,
-        ...post
-    }
-    posts.push(newPost);
-    await writePosts(posts);
+    const newPost = await Post.create(post);
     return newPost;
 }
 
 const getPostById = async (id) => {
-    const posts = await readPosts();
-    const post = posts.find(post => post.id === Number(id));
+    const post = await Post.findById(id);
     return post;
 }
 
+const listPosts = async () => {
+    const posts = await Post.find();
+    return posts;
+}
+
 const updatePost = async (id, post) => {
-    const posts = await readPosts();
-    const postIndex = posts.findIndex(post => post.id === Number(id));
-    if (postIndex === -1) {
-        return null;
-    }
-    posts[postIndex] = {
-        ...posts[postIndex],
-        ...post
-    }
-    await writePosts(posts);
-    return posts[postIndex];
+    const updatedPost = await Post.findOneAndUpdate({ _id: id }, post, { new: true });
+    // const updatedPost = await Post.findByIdAndUpdate(id, post, { new: true });
+    return updatedPost;
 }
 
 const deletePost = async (id) => {
-    const posts = await readPosts();
-    const postIndex = posts.findIndex(post => post.id === Number(id));
-    if (postIndex === -1) {
-        return null;
-    }
-    posts.splice(postIndex, 1);
-    await writePosts(posts);
-    return true;
+    const deletedPost = await Post.findByIdAndDelete(id);
+    return deletedPost;
 }
 
 module.exports = {
-    readPosts,
-    writePosts,
     createPost,
     getPostById,
+    listPosts,
     updatePost,
     deletePost
 }

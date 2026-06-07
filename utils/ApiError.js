@@ -1,11 +1,12 @@
-class ApiError extends Error {
-    constructor(statusCode, message) {
+class APIError extends Error {
+    constructor(
+        message,
+        statusCode
+    ) {
         super(message);
         this.statusCode = statusCode;
-        this.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
-        this.isOperational = true;
-        Error.captureStackTrace(this, this.constructor);
+        Error.captureStackTrace(this, this.constructor); // to capture the stack trace of the orignal error
     }
 }
 
-module.exports = ApiError;
+module.exports = APIError;

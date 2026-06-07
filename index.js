@@ -5,7 +5,11 @@ const usersRouter = require("./routes/usersRouter");
 const postsRouter = require("./routes/postsRouter");
 const ApiError = require("./utils/ApiError");
 const reqLogger = require("./middlewares/reqLogger");
+const errorHandler = require("./middlewares/errorHandler");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
 
+dotenv.config();
 const app = express();
 
 // app level middlewares
@@ -19,18 +23,14 @@ app.use(reqLogger);
 app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
 
-app.use((err, req, res, next) => {
-    if (err instanceof ApiError) {
-        return res.status(err.statusCode).json({
-            status: err.status,
-            message: err.message,
-            ...(err.data && { data: err.data }),
-        });
-    }
+app.use(errorHandler);
 
-    res.status(500).json({ message: "something went wrong" });
-})
-
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+const PORT = process.env.PORT;
+app.listen(PORT, () => {
+    console.log(`✅✅ Server is running on http://localhost:${PORT}`);
+    mongoose.connect(process.env.DATABASE_URI).then(() => {
+        console.log("✅✅ Database connected successfully");
+    }).catch((err) => {
+        console.log("❌❌ Database connection failed", err);
+    });
 });
